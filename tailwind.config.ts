@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -61,7 +62,27 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				civic: {
+					blue: 'hsl(var(--civic-blue))',
+					'blue-light': 'hsl(var(--civic-blue-light))',
+					'blue-dark': 'hsl(var(--civic-blue-dark))',
+					gold: 'hsl(var(--civic-gold))',
+					gray: 'hsl(var(--civic-gray))'
 				}
+			},
+			backgroundImage: {
+				'civic-gradient': 'var(--gradient-civic)',
+				'gold-gradient': 'var(--gradient-gold)',
+				'subtle-gradient': 'var(--gradient-subtle)'
+			},
+			boxShadow: {
+				'civic': 'var(--shadow-civic)',
+				'glow': 'var(--shadow-glow)',
+				'card': 'var(--shadow-card)'
+			},
+			transitionTimingFunction: {
+				'civic': 'cubic-bezier(0.4, 0, 0.2, 1)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

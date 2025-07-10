@@ -2,39 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Pnyx Design System - Classical civic engagement platform inspired by ancient Greek democracy
+All colors MUST be HSL for proper theming.
 */
 
 @layer base {
   :root {
+    /* Core civic colors - trustworthy blues and clean whites */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 210 30% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 30% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 210 30% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Democratic blue - inspired by classical architecture */
+    --primary: 210 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 210 80% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Subtle civic grays */
+    --secondary: 210 10% 96%;
+    --secondary-foreground: 210 30% 8%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 10% 96%;
+    --muted-foreground: 210 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Golden accent - Greek inspiration */
+    --accent: 45 95% 60%;
+    --accent-foreground: 210 30% 8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 20% 90%;
+    --input: 210 20% 95%;
+    --ring: 210 80% 50%;
+
+    /* Custom civic design tokens */
+    --civic-blue: 210 80% 50%;
+    --civic-blue-light: 210 80% 65%;
+    --civic-blue-dark: 210 80% 35%;
+    --civic-gold: 45 95% 60%;
+    --civic-gray: 210 10% 96%;
+    
+    /* Gradients for hero sections and CTAs */
+    --gradient-civic: linear-gradient(135deg, hsl(var(--civic-blue)), hsl(var(--civic-blue-light)));
+    --gradient-gold: linear-gradient(135deg, hsl(var(--civic-gold)), hsl(45 95% 70%));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--civic-gray)));
+    
+    /* Elegant shadows with civic blue tint */
+    --shadow-civic: 0 10px 30px -10px hsl(var(--civic-blue) / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--civic-blue-light) / 0.3);
+    --shadow-card: 0 4px 16px hsl(var(--civic-blue) / 0.1);
+    
+    /* Smooth democratic transitions */
+    --transition-civic: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
 
