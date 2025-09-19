@@ -20,7 +20,7 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 text-center">
         <div className="max-w-4xl mx-auto">
           {/* Badge */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-civic-blue/10 border border-civic-blue/20 mb-8">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-civic-blue/10 border border-civic-blue/20 mb-8 mt-20">
             <Building2 className="w-4 h-4 text-civic-blue mr-2" />
             <span className="text-sm font-medium text-civic-blue">Modern Democratic Engagement</span>
           </div>
