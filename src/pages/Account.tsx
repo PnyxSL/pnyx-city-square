@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -14,6 +15,9 @@ const Account = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -94,6 +98,54 @@ const Account = () => {
       });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handlePasswordChange = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!newPassword || newPassword.length < 8) {
+      toast({
+        title: "Password too short",
+        description: "Please choose a password with at least 8 characters.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Make sure both password fields match exactly.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+      if (error) {
+        throw error;
+      }
+
+      setNewPassword("");
+      setConfirmPassword("");
+
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed successfully."
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update password.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -193,6 +245,52 @@ const Account = () => {
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Change Password */}
+          <Card className="shadow-card border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-foreground">
+                Update Password
+              </CardTitle>
+              <CardDescription>
+                Choose a new password to secure your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New password</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    placeholder="Enter a strong password"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder="Re-enter your new password"
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  variant="civic"
+                  className="w-full"
+                  disabled={isUpdatingPassword}
+                >
+                  {isUpdatingPassword ? "Updating..." : "Save new password"}
+                </Button>
+              </form>
             </CardContent>
           </Card>
 
