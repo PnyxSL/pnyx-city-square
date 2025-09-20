@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Building2, User, Mail, LogOut, Trash2, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,27 +64,32 @@ const Account = () => {
 
   const handleDeleteAccount = async () => {
     if (!user) return;
-    
-    if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      return;
-    }
 
     setIsDeleting(true);
     
     try {
-      // First sign out the user
-      await supabase.auth.signOut();
-      
+      const { error: invokeError } = await supabase.functions.invoke('delete-user');
+
+      if (invokeError) {
+        throw new Error(invokeError.message || "Failed to delete account.");
+      }
+
+      const { error: signOutError } = await supabase.auth.signOut();
+
+      if (signOutError) {
+        console.error('signOut error after delete', signOutError);
+      }
+
       toast({
-        title: "Account deletion requested",
-        description: "Please contact support to complete the account deletion process."
+        title: "Account deleted",
+        description: "Your account has been permanently removed."
       });
-      
+
       navigate('/');
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to process account deletion request. Please contact support.",
+        description: error instanceof Error ? error.message : "Failed to delete account.",
         variant: "destructive"
       });
     } finally {
@@ -204,15 +208,36 @@ const Account = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button 
-                onClick={handleDeleteAccount} 
-                variant="destructive" 
-                className="w-full"
-                disabled={isDeleting}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                {isDeleting ? "Processing..." : "Delete Account"}
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {isDeleting ? "Processing..." : "Delete Account"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete account?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. All of your personal information and activity will be permanently removed.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Deleting..." : "Yes, delete"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </div>

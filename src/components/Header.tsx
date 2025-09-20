@@ -1,10 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Users, Building2 } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (isMounted) {
+        setUser(session?.user ?? null);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      if (isMounted) {
+        setUser(session?.user ?? null);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const accountLabel = user?.user_metadata?.full_name || user?.email || "Ver mi cuenta";
 
   return (
     <header className="fixed top-0 w-full bg-background/95 backdrop-blur-sm border-b border-border z-50">
@@ -28,23 +54,39 @@ const Header = () => {
             <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
               About
             </a>
-            <Link to="/auth" className="text-muted-foreground hover:text-foreground transition-colors">
-              Sign In
-            </Link>
+            {user ? (
+              <Link to="/account" className="text-muted-foreground hover:text-foreground transition-colors">
+                {accountLabel}
+              </Link>
+            ) : (
+              <Link to="/auth" className="text-muted-foreground hover:text-foreground transition-colors">
+                Sign In
+              </Link>
+            )}
           </nav>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/auth">
-              <Button variant="civic-outline" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button variant="civic" size="sm">
-                Get Started
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/account">
+                <Button variant="civic" size="sm">
+                  Ver mi cuenta
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="civic-outline" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="civic" size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -66,20 +108,36 @@ const Header = () => {
               <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
                 About
               </a>
-              <Link to="/auth" className="text-muted-foreground hover:text-foreground transition-colors">
-                Sign In
-              </Link>
+              {user ? (
+                <Link to="/account" className="text-muted-foreground hover:text-foreground transition-colors">
+                  {accountLabel}
+                </Link>
+              ) : (
+                <Link to="/auth" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Sign In
+                </Link>
+              )}
               <div className="flex flex-col space-y-2 pt-4">
-                <Link to="/auth">
-                  <Button variant="civic-outline" className="w-full">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/auth">
-                  <Button variant="civic" className="w-full">
-                    Get Started
-                  </Button>
-                </Link>
+                {user ? (
+                  <Link to="/account">
+                    <Button variant="civic" className="w-full">
+                      Ver mi cuenta
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/auth">
+                      <Button variant="civic-outline" className="w-full">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/auth">
+                      <Button variant="civic" className="w-full">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
