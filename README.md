@@ -60,6 +60,41 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Password Reset Flow
+
+The application implements a password recovery flow using Supabase.
+
+### Request a Reset Link
+
+1. Navigate to the `Auth` page (`/auth`).
+2. Click on the "Forgot password?" link in the Sign In tab.
+3. Enter your account email and submit. A toast will confirm that a reset link was sent (if the email exists).
+
+### Reset the Password
+
+1. Open the email from Supabase and click the recovery link.
+2. The link will redirect you to `/reset-password` where you can enter a new password.
+3. After updating successfully you will be redirected to your account page.
+
+### Supabase Configuration
+
+In the Supabase Dashboard, ensure the redirect URL `https://YOUR_DOMAIN/reset-password` (and your local dev URL like `http://localhost:5173/reset-password`) is added to the list of allowed redirect URLs under Authentication Settings.
+
+The code uses `supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password' })`.
+
+### Security Notes
+
+- Reset link is sent regardless of whether the email exists (to avoid account enumeration).
+- Token validity and session creation is handled by `@supabase/supabase-js` automatically when the user lands on the page with the recovery token.
+- Users must choose a password with a minimum length of 6 characters (align with Supabase defaults; adjust as needed).
+
+### Future Enhancements (Ideas)
+
+- Add password strength indicator.
+- Add rate limiting / cooldown for repeated reset requests.
+- Localize user-facing text.
+- Add resend link option if token expired.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/6897fc64-a38d-45dc-b6de-8bb0d9292385) and click on Share -> Publish.

@@ -91,51 +91,124 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const handlePasswordReset = async (email: string) => {
+    setIsLoading(true);
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+    if (error) {
+      toast({
+        title: "Password Reset Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Check your email",
+        description: "We've sent a password reset link if the email exists in our system.",
+      });
+    }
+    setIsLoading(false);
+  };
+
   const SignInForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showForgot, setShowForgot] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState("");
 
     const onSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       handleSignIn(email, password);
     };
 
+    const onForgotSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!forgotEmail) return;
+      handlePasswordReset(forgotEmail);
+    };
+
     return (
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="signin-email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="signin-email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-10"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="signin-password">Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="signin-password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10"
-              required
-            />
-          </div>
-        </div>
-        <Button type="submit" variant="civic" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing In..." : "Sign In"}
-        </Button>
-      </form>
+      <div className="space-y-4">
+        {!showForgot && (
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="signin-email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="signin-email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signin-password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="signin-password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" variant="civic" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing In..." : "Sign In"}
+            </Button>
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setShowForgot(true)}
+                className="text-xs text-civic-blue hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          </form>
+        )}
+        {showForgot && (
+          <form onSubmit={onForgotSubmit} className="space-y-4 animate-in fade-in-50">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Account Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="forgot-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" variant="civic" className="w-full" disabled={isLoading}>
+              {isLoading ? "Sending..." : "Send Reset Link"}
+            </Button>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setShowForgot(false)}
+                className="text-xs text-muted-foreground hover:underline"
+              >
+                Back to sign in
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     );
   };
 
